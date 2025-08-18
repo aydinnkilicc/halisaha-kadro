@@ -17,14 +17,17 @@ import * as THREE from "three";
 function Label({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <label className={`block text-sm font-bold text-gray-700 ${className}`}>{children}</label>;
 }
+
 function Input(props: React.InputHTMLAttributes<HTMLInputElement> & { className?: string }) {
   const { className = "", ...rest } = props;
   return <input {...rest} className={`w-full border-2 rounded-xl px-3 py-2 text-sm shadow-inner bg-white/80 focus:ring-2 focus:ring-blue-400 ${className}`} />;
 }
+
 function Select(props: React.SelectHTMLAttributes<HTMLSelectElement> & { className?: string }) {
   const { className = "", ...rest } = props;
   return <select {...rest} className={`w-full border-2 rounded-xl px-3 py-2 text-sm shadow-inner bg-white/80 focus:ring-2 focus:ring-blue-400 ${className}`} />;
 }
+
 function Button3D({ children, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode; className?: string }) {
   return <button {...props} className={`px-4 py-2 rounded-xl bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition ${className}`}>{children}</button>;
 }
@@ -111,7 +114,8 @@ type LabelStyle = {
 
 // Otomatik pozisyon yerleştirme fonksiyonu
 function getAutoPosition(team: number, role: string, existingPlayers: Player[]): { x: number; z: number; facing: number } {
-  const positions = POSITION_COORDINATES[team as keyof typeof POSITION_COORDINATES][role as keyof typeof POSITION_COORDINATES[1]];
+  const teamPositions = POSITION_COORDINATES[team as keyof typeof POSITION_COORDINATES];
+  const positions = teamPositions[role as keyof typeof teamPositions];
 
   if (!positions) {
     // Eğer pozisyon tanımlanmamışsa rastgele yerleştir
@@ -145,7 +149,7 @@ function getAutoPosition(team: number, role: string, existingPlayers: Player[]):
 // -----------------------------
 // GLTF Model (Halı saha)
 // -----------------------------
-function PitchGLB(props: JSX.IntrinsicElements["primitive"]) {
+function PitchGLB({ object, ...props }: { object?: any } & Partial<JSX.IntrinsicElements["primitive"]>) {
   const { scene } = useGLTF("/models/halisaha.glb");
 
   const [offset] = React.useMemo(() => {
@@ -157,7 +161,7 @@ function PitchGLB(props: JSX.IntrinsicElements["primitive"]) {
 
   return (
     <group position={offset} {...props}>
-      <primitive object={scene} />
+      <primitive object={object || scene} />
     </group>
   );
 }
@@ -357,7 +361,6 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
     // Manuel başlangıç pozisyonu - istenen değerler
     (camera as any).position.set(0.01, 23.4, 20.34);
     (camera as any).lookAt(center);
-    (camera as any).lookAt(center);
 
     if (controlsRef.current) {
       controlsRef.current.target.copy(center);
@@ -447,7 +450,15 @@ function SceneWrapper({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
 }) {
   return (
     <Canvas shadows camera={{ position: [0.01, 23.4, 20.34], fov: 55 }}>
-      <SceneContent players={players} setPlayers={setPlayers} orbitEnabled={orbitEnabled} labelStyle={labelStyle} cameraInfo={cameraInfo} setCameraInfo={setCameraInfo} manualCameraUpdate={manualCameraUpdate} />
+      <SceneContent
+        players={players}
+        setPlayers={setPlayers}
+        orbitEnabled={orbitEnabled}
+        labelStyle={labelStyle}
+        cameraInfo={cameraInfo}
+        setCameraInfo={setCameraInfo}
+        manualCameraUpdate={manualCameraUpdate}
+      />
     </Canvas>
   );
 }
