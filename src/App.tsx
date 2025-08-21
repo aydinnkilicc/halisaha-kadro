@@ -12,24 +12,341 @@ import {
 import * as THREE from "three";
 
 // -----------------------------
-// UI Bileşenleri
+// Modern UI Bileşenleri
 // -----------------------------
 function Label({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <label className={`block text-sm font-bold text-gray-700 ${className}`}>{children}</label>;
+  return <label className={`block text-sm font-bold text-white/90 mb-2 ${className}`}>{children}</label>;
 }
 
 function Input(props: React.InputHTMLAttributes<HTMLInputElement> & { className?: string }) {
   const { className = "", ...rest } = props;
-  return <input {...rest} className={`w-full border-2 rounded-xl px-3 py-2 text-sm shadow-inner bg-white/80 focus:ring-2 focus:ring-blue-400 ${className}`} />;
+  return (
+    <input
+      {...rest}
+      className={`w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-white/60 
+                 focus:bg-white/15 focus:border-white/40 focus:ring-4 focus:ring-blue-400/30 transition-all duration-300
+                 shadow-lg hover:shadow-xl hover:bg-white/15 ${className}`}
+    />
+  );
 }
 
 function Select(props: React.SelectHTMLAttributes<HTMLSelectElement> & { className?: string }) {
   const { className = "", ...rest } = props;
-  return <select {...rest} className={`w-full border-2 rounded-xl px-3 py-2 text-sm shadow-inner bg-white/80 focus:ring-2 focus:ring-blue-400 ${className}`} />;
+  return (
+    <select
+      {...rest}
+      className={`w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl px-4 py-3 text-white
+                 focus:bg-white/15 focus:border-white/40 focus:ring-4 focus:ring-blue-400/30 transition-all duration-300
+                 shadow-lg hover:shadow-xl hover:bg-white/15 ${className}`}
+    />
+  );
 }
 
-function Button3D({ children, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode; className?: string }) {
-  return <button {...props} className={`px-4 py-2 rounded-xl bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition ${className}`}>{children}</button>;
+function ModernButton({ children, variant = "primary", size = "md", className = "", ...props }:
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    children: ReactNode;
+    variant?: "primary" | "secondary" | "danger" | "success" | "glass";
+    size?: "sm" | "md" | "lg";
+    className?: string;
+  }) {
+
+  const variants = {
+    primary: "bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 hover:from-blue-600 hover:via-purple-600 hover:to-blue-800 text-white shadow-xl hover:shadow-blue-500/25",
+    secondary: "bg-gradient-to-br from-gray-600 via-gray-700 to-gray-800 hover:from-gray-700 hover:via-gray-800 hover:to-black text-white shadow-xl hover:shadow-gray-500/25",
+    danger: "bg-gradient-to-br from-red-500 via-red-600 to-pink-700 hover:from-red-600 hover:via-pink-600 hover:to-red-800 text-white shadow-xl hover:shadow-red-500/25",
+    success: "bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 hover:from-green-600 hover:via-emerald-600 hover:to-green-800 text-white shadow-xl hover:shadow-green-500/25",
+    glass: "bg-white/10 backdrop-blur-lg border border-white/20 hover:bg-white/20 text-white shadow-xl hover:shadow-white/10"
+  };
+
+  const sizes = {
+    sm: "px-3 py-2 text-xs",
+    md: "px-5 py-2.5 text-sm",
+    lg: "px-7 py-3.5 text-base"
+  };
+
+  return (
+    <button
+      {...props}
+      className={`${variants[variant]} ${sizes[size]} rounded-2xl font-semibold transition-all duration-300 
+                 hover:scale-[1.03] active:scale-95 transform modern-button touch-target
+                 border-0 backdrop-blur-lg ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Modern Toggle Switch
+function ModernToggle({ checked, onChange, label }: { checked: boolean; onChange: (checked: boolean) => void; label: string }) {
+  return (
+    <div className="flex items-center space-x-3">
+      <button
+        onClick={() => onChange(!checked)}
+        className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 
+                   ${checked ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-white/20'} 
+                   shadow-lg backdrop-blur-lg border border-white/20`}
+      >
+        <span
+          className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 
+                     ${checked ? 'translate-x-7' : 'translate-x-1'}`}
+        />
+      </button>
+      <span className="text-white/90 font-medium">{label}</span>
+    </div>
+  );
+}
+
+// Modern Slider
+function ModernSlider({ value, onChange, min, max, step, label, unit = "" }: {
+  value: number;
+  onChange: (value: number) => void;
+  min: number;
+  max: number;
+  step: number;
+  label: string;
+  unit?: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <Label>{label}</Label>
+        <span className="text-white/80 bg-white/10 px-3 py-1 rounded-xl backdrop-blur-lg border border-white/20 font-mono text-sm">
+          {value.toFixed(1)}{unit}
+        </span>
+      </div>
+      <div className="relative">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
+          className="w-full h-3 bg-white/10 rounded-xl appearance-none cursor-pointer backdrop-blur-lg premium-slider
+                     slider-thumb:appearance-none slider-thumb:h-6 slider-thumb:w-6 slider-thumb:rounded-full 
+                     slider-thumb:bg-gradient-to-r slider-thumb:from-blue-500 slider-thumb:to-purple-600
+                     slider-thumb:shadow-xl slider-thumb:cursor-pointer hover:slider-thumb:scale-110
+                     focus:outline-none focus:ring-4 focus:ring-blue-400/30"
+          style={{
+            background: `linear-gradient(to right, #3b82f6 0%, #8b5cf6 ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.1) ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.1) 100%)`
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Modern 3D Admin Status Bar
+function AdminStatusBar({ isAdmin, onLogout }: { isAdmin: boolean; onLogout: () => void }) {
+  if (!isAdmin) return null;
+
+  return (
+    <div className="mb-6 bg-gradient-to-r from-green-500/20 to-emerald-600/20 backdrop-blur-xl 
+                    border border-green-400/30 rounded-3xl p-6 shadow-2xl transform perspective-1000 
+                    hover:scale-105 hover:rotateX-5 transition-all duration-500 animate-pulse">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <div className="w-5 h-5 bg-green-400 rounded-full animate-ping absolute"></div>
+            <div className="w-5 h-5 bg-green-400 rounded-full shadow-lg shadow-green-400/50"></div>
+          </div>
+          <div>
+            <span className="text-green-300 font-bold text-xl block">🛡️ Admin Panel Aktif</span>
+            <span className="text-green-200/70 text-sm">Tüm yönetim yetkileriniz aktif</span>
+          </div>
+        </div>
+        <ModernButton
+          onClick={onLogout}
+          variant="danger"
+          size="sm"
+          className="animate-bounce hover:animate-none"
+        >
+          🚪 Güvenli Çıkış
+        </ModernButton>
+      </div>
+    </div>
+  );
+}
+
+// (AdminHoverPopup bileşeni kaldırıldı)
+
+// Ultra Modern 3D Admin Login Modal
+function AdminLoginModal({ isOpen, onClose, onLogin }: {
+  isOpen: boolean;
+  onClose: () => void;
+  onLogin: (password: string) => void;
+}) {
+  const [password, setPassword] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      if (password === ADMIN_PASSWORD) {
+        onLogin(password);
+        setPassword("");
+        setAttempt(0);
+      } else {
+        setAttempt(prev => prev + 1);
+        // Hatalı giriş animasyonu
+        setTimeout(() => {
+          setPassword("");
+        }, 1000);
+      }
+      setIsAnimating(false);
+    }, 1500);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl animate-fade-in">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-purple-900/30 to-pink-900/30 animate-gradient-shift"></div>
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-white/20 rounded-full animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Modal Container */}
+      <div className={`relative bg-gradient-to-br from-gray-900/95 via-blue-900/95 to-purple-900/95 backdrop-blur-2xl 
+                      border-2 border-white/30 rounded-3xl p-10 shadow-2xl max-w-md w-full mx-4
+                      transform transition-all duration-700 hover:scale-105 perspective-1000
+                      ${isAnimating ? 'animate-pulse scale-110' : ''}
+                      ${attempt > 0 ? 'animate-shake border-red-400/50' : ''}`}>
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full
+                     flex items-center justify-center text-white/70 hover:text-white transition-all duration-300
+                     backdrop-blur-lg border border-white/20 hover:scale-110 hover:rotate-90"
+        >
+          ✕
+        </button>
+
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className={`w-20 h-20 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-3xl 
+                          flex items-center justify-center mx-auto mb-6 shadow-2xl transform transition-all duration-500
+                          ${isAnimating ? 'animate-spin scale-125' : 'hover:scale-110 hover:rotate-12'}`}>
+            <span className="text-3xl animate-pulse">🔐</span>
+          </div>
+
+          <h2 className="text-3xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            🛡️ Güvenli Admin Girişi
+          </h2>
+
+          <div className="space-y-2">
+            <p className="text-white/80">Yönetici paneline erişim için</p>
+            <p className="text-white/60 text-sm">güvenlik şifrenizi giriniz</p>
+            {attempt > 0 && (
+              <p className="text-red-400 text-sm font-semibold animate-pulse">
+                ❌ Hatalı şifre! Deneme: {attempt}/3
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Form Section */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="relative">
+            <Input
+              type="password"
+              placeholder="🔑 Güvenlik şifrenizi girin..."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`text-center text-lg font-mono tracking-widest transition-all duration-300
+                         ${attempt > 0 ? 'border-red-400/50 shake' : ''}
+                         ${isAnimating ? 'animate-pulse' : ''}`}
+              autoFocus
+              disabled={isAnimating}
+            />
+
+            {/* Security indicator */}
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+              {password.length > 0 && (
+                <div className={`w-3 h-3 rounded-full transition-all duration-300
+                               ${password === ADMIN_PASSWORD ? 'bg-green-400 animate-pulse' : 'bg-orange-400'}`} />
+              )}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-4">
+            <ModernButton
+              type="submit"
+              variant="success"
+              className={`flex-1 relative overflow-hidden group
+                         ${isAnimating ? 'animate-pulse pointer-events-none' : ''}`}
+              disabled={isAnimating}
+            >
+              <div className="relative z-10 flex items-center justify-center space-x-2">
+                {isAnimating ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Doğrulanıyor...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🔓</span>
+                    <span>Güvenli Giriş</span>
+                  </>
+                )}
+              </div>
+
+              {/* Button glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 
+                             group-hover:opacity-20 transition-opacity duration-300 rounded-2xl" />
+            </ModernButton>
+
+            <ModernButton
+              type="button"
+              onClick={onClose}
+              variant="secondary"
+              className="flex-1 hover:bg-gradient-to-r hover:from-gray-600 hover:to-gray-800"
+              disabled={isAnimating}
+            >
+              <span className="flex items-center justify-center space-x-2">
+                <span>❌</span>
+                <span>İptal</span>
+              </span>
+            </ModernButton>
+          </div>
+
+          {/* Help Text */}
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
+              <span className="text-white/30 text-xs">Güvenli bağlantı aktif</span>
+            </div>
+          </div>
+        </form>
+
+        {/* Decorative Elements */}
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 
+                       rounded-full opacity-60 animate-pulse" />
+        <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-600 
+                       rounded-full opacity-60 animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+    </div>
+  );
 }
 
 // -----------------------------
@@ -37,6 +354,7 @@ function Button3D({ children, className = "", ...props }: React.ButtonHTMLAttrib
 // -----------------------------
 const PITCH_WIDTH = 18;
 const PITCH_LENGTH = 28;
+const ADMIN_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD as string) ?? "";
 
 // Pozisyon yerleştirme koordinatları (referans görsele göre ayarlandı)
 const POSITION_COORDINATES = {
@@ -118,7 +436,6 @@ function getAutoPosition(team: number, role: string, existingPlayers: Player[]):
   const positions = teamPositions[role as keyof typeof teamPositions];
 
   if (!positions) {
-    // Eğer pozisyon tanımlanmamışsa rastgele yerleştir
     return {
       x: (Math.random() - 0.5) * PITCH_WIDTH,
       z: (Math.random() - 0.5) * PITCH_LENGTH,
@@ -127,7 +444,6 @@ function getAutoPosition(team: number, role: string, existingPlayers: Player[]):
   }
 
   if (Array.isArray(positions)) {
-    // Bu pozisyondan kaç oyuncu var
     const sameRoleCount = existingPlayers.filter(p => p.team === team && p.role === role).length;
     const positionIndex = sameRoleCount % positions.length;
 
@@ -137,7 +453,6 @@ function getAutoPosition(team: number, role: string, existingPlayers: Player[]):
       facing: team === 1 ? 0 : Math.PI
     };
   } else {
-    // Tek pozisyon (genellikle kaleci)
     return {
       x: positions.x,
       z: positions.z,
@@ -152,16 +467,19 @@ function getAutoPosition(team: number, role: string, existingPlayers: Player[]):
 function PitchGLB({ object, ...props }: { object?: any } & Partial<JSX.IntrinsicElements["primitive"]>) {
   const { scene } = useGLTF("/models/halisaha.glb");
 
-  const [offset] = React.useMemo(() => {
+  const [center, minY] = React.useMemo(() => {
     const box = new THREE.Box3().setFromObject(scene);
-    const center = new THREE.Vector3();
-    box.getCenter(center);
-    return [[-center.x, -box.min.y, -center.z] as [number, number, number]];
+    const c = new THREE.Vector3();
+    box.getCenter(c);
+    return [c, box.min.y] as [THREE.Vector3, number];
   }, [scene]);
 
+  // Outer group pivot at model center; positioned so model bottom stays on ground (y=0)
   return (
-    <group position={offset} {...props}>
-      <primitive object={object || scene} />
+    <group {...props} position={[0, center.y - minY, 0]}>
+      <group position={[-center.x, -center.y, -center.z]}>
+        <primitive object={object || scene} />
+      </group>
     </group>
   );
 }
@@ -169,10 +487,11 @@ function PitchGLB({ object, ...props }: { object?: any } & Partial<JSX.Intrinsic
 // -----------------------------
 // Oyuncu isimleri ve ikonları - Akıllı görselleştirme
 // -----------------------------
-function PlayerWithIcon({ p, setDragId, labelStyle }: {
+function PlayerWithIcon({ p, setDragId, labelStyle, isAdmin }: {
   p: Player;
   setDragId: React.Dispatch<React.SetStateAction<string | null>>;
   labelStyle: LabelStyle;
+  isAdmin: boolean;
 }) {
   const texture = React.useMemo(() => {
     const loader = new THREE.TextureLoader();
@@ -209,12 +528,11 @@ function PlayerWithIcon({ p, setDragId, labelStyle }: {
     <group
       position={[p.x, Math.max(0.5, labelStyle.globalY), p.z]}
       rotation={[0, p.facing, 0]}
-      onPointerDown={(e) => { e.stopPropagation(); setDragId(p.id); }}
+      onPointerDown={isAdmin ? (e) => { e.stopPropagation(); setDragId(p.id); } : undefined}
     >
       {isTopView ? (
         // Yukarıdan bakış modu
         <group rotation={[-Math.PI / 2, 0, 0]} position={[0, Math.max(0.6, 0.1), 0]}>
-          {/* Sahaya paralel isim etiketi - Minimum 0.5 üstünde */}
           <Text
             fontSize={labelStyle.size}
             color={p.team === 1 ? labelStyle.colorTeam1 : labelStyle.colorTeam2}
@@ -228,7 +546,6 @@ function PlayerWithIcon({ p, setDragId, labelStyle }: {
             {p.name || "Oyuncu"}
           </Text>
 
-          {/* Yukarıdan bakış için ikon - Minimum 0.5 üstünde */}
           <mesh position={[0, 0, Math.max(0.5, 0)]} rotation={[0, 0, 0]}>
             <planeGeometry args={[iconSize, iconSize]} />
             <meshBasicMaterial
@@ -243,7 +560,6 @@ function PlayerWithIcon({ p, setDragId, labelStyle }: {
       ) : (
         // Normal görünüm modu
         <Billboard follow lockX={false} lockY={false} lockZ={false}>
-          {/* Oyuncu İsmi */}
           <Text
             fontSize={labelStyle.size}
             color={p.team === 1 ? labelStyle.colorTeam1 : labelStyle.colorTeam2}
@@ -257,7 +573,6 @@ function PlayerWithIcon({ p, setDragId, labelStyle }: {
             {p.name || "Oyuncu"}
           </Text>
 
-          {/* Oyuncu İkonu - İsmin hemen altında ve ortalanmış - Minimum 0.5 yükseklikte */}
           <mesh position={[0, Math.max(0.5, -labelStyle.nameIconDistance), 0]}>
             <planeGeometry args={[iconSize, iconSize]} />
             <meshBasicMaterial
@@ -276,7 +591,7 @@ function PlayerWithIcon({ p, setDragId, labelStyle }: {
 // -----------------------------
 // Saha + Oyuncular
 // -----------------------------
-function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInfo, setCameraInfo, manualCameraUpdate }: {
+function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInfo, setCameraInfo, manualCameraUpdate, isAdmin }: {
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   orbitEnabled: boolean;
@@ -284,6 +599,7 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
   cameraInfo: any;
   setCameraInfo: React.Dispatch<React.SetStateAction<any>>;
   manualCameraUpdate: any;
+  isAdmin: boolean;
 }) {
   const [dragId, setDragId] = useState<string | null>(null);
   const { camera, size } = useThree();
@@ -356,9 +672,8 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
 
     const fov = (camera as any).fov * (Math.PI / 180);
     let distance = (maxDim / 2) / Math.tan(fov / 2);
-    distance *= 0.8; // Daha yakından başla
+    distance *= 0.8;
 
-    // Manuel başlangıç pozisyonu - istenen değerler
     (camera as any).position.set(0.01, 23.4, 20.34);
     (camera as any).lookAt(center);
 
@@ -372,7 +687,7 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
 
   useEffect(() => {
     const stopDrag = (e: MouseEvent) => {
-      if (dragId) {
+      if (dragId && isAdmin) {
         e.preventDefault();
         setDragId(null);
       }
@@ -383,9 +698,10 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
       window.removeEventListener("contextmenu", stopDrag);
       window.removeEventListener("mouseup", stopDrag);
     };
-  }, [dragId]);
+  }, [dragId, isAdmin]);
 
   const updatePosition = (id: string, x: number, z: number) => {
+    if (!isAdmin) return;
     setPlayers((prev) => prev.map((pp) => (pp.id === id ? { ...pp, x, z } : pp)));
   };
 
@@ -394,7 +710,7 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
       rotation={[-Math.PI / 2, 0, 0]}
       position={[0, 0, 0]}
       onPointerMove={(e) => {
-        if (!dragId) return;
+        if (!dragId || !isAdmin) return;
         e.stopPropagation();
         updatePosition(dragId, e.point.x, e.point.z);
       }}
@@ -420,15 +736,16 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
           p={p}
           labelStyle={labelStyle}
           setDragId={setDragId}
+          isAdmin={isAdmin}
         />
       ))}
-      {dragId && <InteractionPlane />}
+      {dragId && isAdmin && <InteractionPlane />}
 
       <ContactShadows position={[0, 0, 0]} opacity={0.5} scale={50} blur={3} far={10} />
       <OrbitControls
         ref={controlsRef}
         makeDefault
-        enabled={!dragId && orbitEnabled}
+        enabled={(!dragId || !isAdmin) && orbitEnabled}
         enablePan={true}
         enableRotate={true}
         enableZoom={true}
@@ -439,7 +756,7 @@ function SceneContent({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
   );
 }
 
-function SceneWrapper({ players, setPlayers, orbitEnabled, labelStyle, cameraInfo, setCameraInfo, manualCameraUpdate }: {
+function SceneWrapper({ players, setPlayers, orbitEnabled, labelStyle, cameraInfo, setCameraInfo, manualCameraUpdate, isAdmin }: {
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   orbitEnabled: boolean;
@@ -447,6 +764,7 @@ function SceneWrapper({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
   cameraInfo: any;
   setCameraInfo: React.Dispatch<React.SetStateAction<any>>;
   manualCameraUpdate: any;
+  isAdmin: boolean;
 }) {
   return (
     <Canvas shadows camera={{ position: [0.01, 23.4, 20.34], fov: 55 }}>
@@ -458,15 +776,16 @@ function SceneWrapper({ players, setPlayers, orbitEnabled, labelStyle, cameraInf
         cameraInfo={cameraInfo}
         setCameraInfo={setCameraInfo}
         manualCameraUpdate={manualCameraUpdate}
+        isAdmin={isAdmin}
       />
     </Canvas>
   );
 }
 
 // -----------------------------
-// Inline Düzenlenebilir Oyuncu Kartı
+// Modern Oyuncu Kartı
 // -----------------------------
-function EditablePlayerCard({ player, onUpdate, onRemove, isSelected, onSelect }: {
+function ModernPlayerCard({ player, onUpdate, onRemove, isSelected, onSelect }: {
   player: Player;
   onUpdate: (field: string, value: string) => void;
   onRemove: () => void;
@@ -498,13 +817,21 @@ function EditablePlayerCard({ player, onUpdate, onRemove, isSelected, onSelect }
     }
   };
 
+  const teamGradient = player.team === 1
+    ? "from-blue-500/30 via-blue-600/30 to-cyan-500/30"
+    : "from-red-500/30 via-red-600/30 to-pink-500/30";
+
+  const teamBorder = player.team === 1
+    ? "border-blue-400/50"
+    : "border-red-400/50";
+
   return (
-    <div className={`rounded-xl p-3 border-2 transition-all ${isSelected
-      ? `${player.team === 1 ? "bg-blue-50 border-blue-500" : "bg-red-50 border-red-500"}`
-      : `${player.team === 1 ? "bg-blue-100 hover:bg-blue-150" : "bg-red-100 hover:bg-red-150"} border-gray-300 hover:border-gray-400`
-      }`}>
-      <div className="flex items-center gap-2">
-        <div className="flex-1 space-y-1">
+    <div className={`bg-gradient-to-br ${teamGradient} backdrop-blur-lg border ${teamBorder} 
+                    rounded-2xl p-4 transition-all duration-300 hover:scale-105 shadow-2xl
+                    ${isSelected ? 'ring-4 ring-white/50 shadow-2xl' : 'hover:shadow-xl'}
+                    transform hover:rotate-1`}>
+      <div className="flex items-center gap-3">
+        <div className="flex-1 space-y-3">
           {/* Oyuncu Adı */}
           <div className="flex items-center gap-2">
             {editingField === 'name' ? (
@@ -519,13 +846,14 @@ function EditablePlayerCard({ player, onUpdate, onRemove, isSelected, onSelect }
               />
             ) : (
               <div
-                className="font-bold cursor-pointer hover:bg-white/50 px-2 py-1 rounded flex-1"
+                className="font-bold text-white cursor-pointer hover:bg-white/20 px-3 py-2 rounded-xl flex-1 
+                           transition-all duration-300 hover:scale-105 backdrop-blur-lg"
                 onClick={() => {
                   onSelect();
                   startEdit('name', player.name);
                 }}
               >
-                {player.name}
+                ⭐ {player.name}
               </div>
             )}
           </div>
@@ -541,21 +869,27 @@ function EditablePlayerCard({ player, onUpdate, onRemove, isSelected, onSelect }
                 className="text-xs"
                 autoFocus
               >
-                <option value="KALECİ">Kaleci</option>
-                <option value="DEFANS">Defans</option>
-                <option value="ORTA SAHA">Orta Saha</option>
-                <option value="FORVET">Forvet</option>
-                <option value="KANAT">Kanat</option>
+                <option value="KALECİ">🥅 Kaleci</option>
+                <option value="DEFANS">🛡️ Defans</option>
+                <option value="ORTA SAHA">⚽ Orta Saha</option>
+                <option value="FORVET">🎯 Forvet</option>
+                <option value="KANAT">🏃 Kanat</option>
               </Select>
             ) : (
               <div
-                className="text-xs text-gray-600 cursor-pointer hover:bg-white/50 px-2 py-1 rounded flex-1"
+                className="text-sm text-white/90 cursor-pointer hover:bg-white/20 px-3 py-2 rounded-xl flex-1
+                           transition-all duration-300 hover:scale-105 backdrop-blur-lg"
                 onClick={() => {
                   onSelect();
                   startEdit('role', player.role);
                 }}
               >
-                {player.role}
+                {player.role === 'KALECİ' && '🥅'}
+                {player.role === 'DEFANS' && '🛡️'}
+                {player.role === 'ORTA SAHA' && '⚽'}
+                {player.role === 'FORVET' && '🎯'}
+                {player.role === 'KANAT' && '🏃'}
+                {' '}{player.role}
               </div>
             )}
           </div>
@@ -571,38 +905,45 @@ function EditablePlayerCard({ player, onUpdate, onRemove, isSelected, onSelect }
                 className="text-xs"
                 autoFocus
               >
-                <option value="1">Takım 1</option>
-                <option value="2">Takım 2</option>
+                <option value="1">🔵 Takım 1</option>
+                <option value="2">🔴 Takım 2</option>
               </Select>
             ) : (
               <div
-                className="text-xs text-gray-500 cursor-pointer hover:bg-white/50 px-2 py-1 rounded flex-1"
+                className="text-xs text-white/80 cursor-pointer hover:bg-white/20 px-3 py-2 rounded-xl flex-1
+                           transition-all duration-300 hover:scale-105 backdrop-blur-lg"
                 onClick={() => {
                   onSelect();
                   startEdit('team', player.team.toString());
                 }}
               >
-                Takım {player.team}
+                {player.team === 1 ? '🔵' : '🔴'} Takım {player.team}
               </div>
             )}
           </div>
         </div>
 
-        <button
+        <ModernButton
           onClick={onRemove}
-          className="text-red-500 hover:text-red-700 font-bold text-lg px-2 py-1 hover:bg-red-100 rounded"
+          variant="danger"
+          size="sm"
+          className="hover:rotate-90 transform transition-all duration-300"
         >
-          ✕
-        </button>
+          🗑️
+        </ModernButton>
       </div>
     </div>
   );
 }
 
 // -----------------------------
-// Sağ Panel
+// Modern 3D Sağ Panel (Güncellenmiş tasarım)
 // -----------------------------
-function SidePanel({ players, setPlayers, selectedId, setSelectedId, orbitEnabled, setOrbitEnabled, labelStyle, setLabelStyle, cameraInfo, setCameraPosition, setCameraDistance, setCameraAngle, resetCamera, topView, sideView }: {
+function ModernSidePanel({
+  players, setPlayers, selectedId, setSelectedId, orbitEnabled, setOrbitEnabled,
+  labelStyle, setLabelStyle, cameraInfo, setCameraPosition, setCameraDistance,
+  setCameraAngle, resetCamera, topView, sideView, isAdmin
+}: {
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   selectedId: string | null;
@@ -618,8 +959,12 @@ function SidePanel({ players, setPlayers, selectedId, setSelectedId, orbitEnable
   resetCamera: () => void;
   topView: () => void;
   sideView: () => void;
+  isAdmin: boolean;
 }) {
+
   const updatePlayer = (id: string, field: string, value: string) => {
+    if (!isAdmin) return;
+
     if (field === 'team') {
       const player = players.find(p => p.id === id);
       if (player) {
@@ -651,6 +996,8 @@ function SidePanel({ players, setPlayers, selectedId, setSelectedId, orbitEnable
   };
 
   const addPlayer = (team: number) => {
+    if (!isAdmin) return;
+
     const newId = Date.now().toString();
     const defaultRole = "ORTA SAHA";
     const autoPos = getAutoPosition(team, defaultRole, players);
@@ -669,6 +1016,8 @@ function SidePanel({ players, setPlayers, selectedId, setSelectedId, orbitEnable
   };
 
   const addTeam7 = () => {
+    if (!isAdmin) return;
+
     const roles7 = ["KALECİ", "DEFANS", "DEFANS", "DEFANS", "ORTA SAHA", "ORTA SAHA", "FORVET"];
     const newPlayers: Player[] = [];
 
@@ -694,189 +1043,319 @@ function SidePanel({ players, setPlayers, selectedId, setSelectedId, orbitEnable
   };
 
   const removePlayer = (id: string) => {
+    if (!isAdmin) return;
     setPlayers((prev) => prev.filter((p) => p.id !== id));
     setSelectedId(null);
   };
 
+  if (!isAdmin) return null;
+
   return (
-    <div className="w-80 bg-gradient-to-b from-gray-100 to-gray-200 backdrop-blur border-l h-screen p-5 overflow-y-auto shadow-2xl">
-      <h2 className="text-2xl font-bold mb-4 flex justify-between items-center">Kadro</h2>
+    <div className="w-[420px] bg-gradient-to-br from-gray-900/98 via-purple-900/95 to-blue-900/95 
+                    backdrop-blur-2xl border-l-2 border-white/30 h-screen overflow-y-auto shadow-2xl
+                    modern-scrollbar relative">
 
-      <div className="flex gap-2 mb-4">
-        <Button3D onClick={() => addPlayer(1)}>+ Takım 1</Button3D>
-        <Button3D onClick={() => addPlayer(2)}>+ Takım 2</Button3D>
+      {/* Animated background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-cyan-500/10 animate-gradient-shift"></div>
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white/20 rounded-full animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
+            }}
+          />
+        ))}
       </div>
-      <Button3D onClick={addTeam7} className="w-full mb-4">7 - 7 Takım Ekle</Button3D>
 
-      <Button3D onClick={() => setOrbitEnabled(!orbitEnabled)} className="w-full mb-4">
-        {orbitEnabled ? "Sabitle" : "Hareketli"}
-      </Button3D>
-
-      <div className="mb-4">
-        <h3 className="font-bold text-gray-700 mb-2">Oyuncular (Düzenlemek için tıklayın)</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {/* Sol Kolon - Takım 2 (Kırmızı) */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-red-600 text-center bg-red-100 py-1 rounded">Takım 2</h4>
-            {players.filter(p => p.team === 2).map((p) => (
-              <EditablePlayerCard
-                key={p.id}
-                player={p}
-                onUpdate={(field, value) => updatePlayer(p.id, field, value)}
-                onRemove={() => removePlayer(p.id)}
-                isSelected={selectedId === p.id}
-                onSelect={() => setSelectedId(p.id)}
-              />
-            ))}
+      <div className="relative p-6 space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 via-blue-600 to-cyan-500 rounded-3xl 
+                          flex items-center justify-center mx-auto mb-6 shadow-2xl transform hover:scale-110
+                          hover:rotate-12 transition-all duration-500 border-2 border-white/20 animate-pulse">
+            <span className="text-3xl">⚽</span>
           </div>
+          <h2 className="text-3xl font-bold text-white mb-3 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            Kadro Yönetimi
+          </h2>
+          <div className="h-1 w-24 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 rounded-full mx-auto"></div>
+        </div>
 
-          {/* Sağ Kolon - Takım 1 (Mavi) */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-blue-600 text-center bg-blue-100 py-1 rounded">Takım 1</h4>
-            {players.filter(p => p.team === 1).map((p) => (
-              <EditablePlayerCard
-                key={p.id}
-                player={p}
-                onUpdate={(field, value) => updatePlayer(p.id, field, value)}
-                onRemove={() => removePlayer(p.id)}
-                isSelected={selectedId === p.id}
-                onSelect={() => setSelectedId(p.id)}
-              />
-            ))}
+        {/* Hızlı Aksiyonlar - İkonlu Toolbar (sticky) */}
+        <div className="sticky top-0 z-20 -mt-2">
+          <div className="bg-white border border-gray-200 rounded-2xl p-3 shadow-xl flex flex-wrap gap-2">
+            <ModernButton onClick={() => addPlayer(1)} size="sm" variant="glass" className="px-3">
+              <span className="flex items-center gap-1"><i className="fas fa-users"></i> <span>Takım 1</span></span>
+            </ModernButton>
+            <ModernButton onClick={() => addPlayer(2)} size="sm" variant="glass" className="px-3">
+              <span className="flex items-center gap-1"><i className="fas fa-users"></i> <span>Takım 2</span></span>
+            </ModernButton>
+            <ModernButton onClick={addTeam7} size="sm" variant="glass" className="px-3">
+              <span className="flex items-center gap-1"><i className="fas fa-list"></i> <span>7v7</span></span>
+            </ModernButton>
+            <div className="mx-2 w-px h-6 bg-white/20 rounded" />
+            <ModernButton onClick={resetCamera} size="sm" variant="glass" className="px-3">
+              <span className="flex items-center gap-1"><i className="fas fa-redo-alt"></i> <span>Reset</span></span>
+            </ModernButton>
+            <ModernButton onClick={topView} size="sm" variant="glass" className="px-3">
+              <span className="flex items-center gap-1"><i className="fas fa-video"></i> <span>Üst</span></span>
+            </ModernButton>
+            <ModernButton onClick={sideView} size="sm" variant="glass" className="px-3">
+              <span className="flex items-center gap-1"><i className="fas fa-video"></i> <span>Yan</span></span>
+            </ModernButton>
           </div>
         </div>
-      </div>
 
-      {/* Kamera Bilgi Paneli */}
-      <div className="mb-4 bg-gray-50 rounded-xl p-3 border">
-        <h3 className="font-bold text-gray-700 mb-2 text-sm">📹 Kamera Bilgileri</h3>
-        <div className="space-y-2 text-xs">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Mesafe:</span>
-            <input
-              type="number"
-              step="0.1"
-              min="1"
-              max="100"
-              value={cameraInfo.distance}
-              onChange={(e) => setCameraDistance(parseFloat(e.target.value))}
-              className="font-mono bg-blue-100 px-2 py-1 rounded w-16 text-center"
-            />
+        {/* Oyuncu Ekleme Butonları - 3D Modern */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <ModernButton
+              onClick={() => addPlayer(1)}
+              variant="primary"
+              className="text-sm transform hover:scale-110 hover:-translate-y-1 hover:rotate-2
+                        shadow-2xl border-2 border-blue-300/30 backdrop-blur-lg
+                        bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600"
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <span className="text-lg">🔵</span>
+                <span className="font-bold">Takım 1</span>
+              </div>
+            </ModernButton>
+
+            <ModernButton
+              onClick={() => addPlayer(2)}
+              variant="danger"
+              className="text-sm transform hover:scale-110 hover:-translate-y-1 hover:-rotate-2
+                        shadow-2xl border-2 border-red-300/30 backdrop-blur-lg
+                        bg-gradient-to-br from-red-500 via-red-600 to-pink-600"
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <span className="text-lg">🔴</span>
+                <span className="font-bold">Takım 2</span>
+              </div>
+            </ModernButton>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Açı:</span>
-            <input
-              type="number"
-              step="1"
-              min="-90"
-              max="90"
-              value={parseFloat(cameraInfo.angle)}
-              onChange={(e) => setCameraAngle(parseFloat(e.target.value))}
-              className="font-mono bg-green-100 px-2 py-1 rounded w-16 text-center"
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-1 mt-2">
-            <div className="text-center">
-              <div className="text-gray-500">X</div>
-              <input
-                type="number"
-                step="0.1"
-                value={parseFloat(cameraInfo.position?.x || '0')}
-                onChange={(e) => setCameraPosition('x', parseFloat(e.target.value))}
-                className="font-mono text-xs bg-red-100 px-1 py-1 rounded w-full text-center"
-              />
+
+          <ModernButton
+            onClick={addTeam7}
+            variant="success"
+            className="w-full transform hover:scale-105 hover:-translate-y-2
+                      shadow-2xl border-2 border-green-300/30 backdrop-blur-lg
+                      bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600"
+          >
+            <div className="flex items-center justify-center space-x-3">
+              <span className="text-xl">⚽</span>
+              <span className="font-bold text-lg">7v7 Takım Kuruluşu</span>
             </div>
-            <div className="text-center">
-              <div className="text-gray-500">Y</div>
-              <input
-                type="number"
-                step="0.1"
-                value={parseFloat(cameraInfo.position?.y || '0')}
-                onChange={(e) => setCameraPosition('y', parseFloat(e.target.value))}
-                className="font-mono text-xs bg-green-100 px-1 py-1 rounded w-full text-center"
-              />
+          </ModernButton>
+        </div>
+
+        {/* Kamera Kontrolleri - Modern 3D Card */}
+        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl rounded-3xl p-6 
+                       border-2 border-white/20 shadow-2xl transform hover:scale-[1.02] transition-all duration-500">
+          <h3 className="text-white font-bold mb-6 flex items-center gap-3 text-xl section-title">
+            <i className="fas fa-video"></i>
+            Kamera Kontrolleri
+          </h3>
+
+          <ModernToggle
+            checked={orbitEnabled}
+            onChange={setOrbitEnabled}
+            label="Kamera Hareketi"
+          />
+
+          <div className="mt-6 space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              <ModernButton
+                onClick={resetCamera}
+                size="sm"
+                variant="glass"
+                className="transform hover:scale-110 hover:-translate-y-1 shadow-xl"
+              >
+                🎯 Reset
+              </ModernButton>
+              <ModernButton
+                onClick={topView}
+                size="sm"
+                variant="glass"
+                className="transform hover:scale-110 hover:-translate-y-1 shadow-xl"
+              >
+                ⬆️ Üst
+              </ModernButton>
+              <ModernButton
+                onClick={sideView}
+                size="sm"
+                variant="glass"
+                className="transform hover:scale-110 hover:-translate-y-1 shadow-xl"
+              >
+                ➡️ Yan
+              </ModernButton>
             </div>
-            <div className="text-center">
-              <div className="text-gray-500">Z</div>
-              <input
-                type="number"
-                step="0.1"
-                value={parseFloat(cameraInfo.position?.z || '0')}
-                onChange={(e) => setCameraPosition('z', parseFloat(e.target.value))}
-                className="font-mono text-xs bg-blue-100 px-1 py-1 rounded w-full text-center"
-              />
+
+            {/* Kamera Pozisyon Kontrolleri */}
+            <div className="grid grid-cols-3 gap-3">
+              {['x', 'y', 'z'].map((axis) => (
+                <div key={axis} className="text-center">
+                  <Label className="text-xs uppercase font-bold text-white/90">{axis}</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={parseFloat(cameraInfo.position?.[axis] || '0')}
+                    onChange={(e) => setCameraPosition(axis, parseFloat(e.target.value))}
+                    className="text-xs h-10 text-center font-mono bg-white/15 border-2 border-white/30 modern-input"
+                  />
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="flex gap-1 mt-2">
-            <Button3D onClick={resetCamera} className="text-xs px-2 py-1 flex-1">Sıfırla</Button3D>
-            <Button3D onClick={topView} className="text-xs px-2 py-1 flex-1">Üstten</Button3D>
-            <Button3D onClick={sideView} className="text-xs px-2 py-1 flex-1">Yandan</Button3D>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-4">
-        <div>
-          <Label>Yazı Boyutu</Label>
-          <input
-            type="range"
+        {/* Görsel Ayarlar - Modern 3D Card */}
+        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl rounded-3xl p-6 
+                       border-2 border-white/20 shadow-2xl space-y-6 transform hover:scale-[1.02] transition-all duration-500">
+          <h3 className="text-white font-bold flex items-center gap-3 text-xl section-title">
+            <i className="fas fa-palette"></i>
+            Görsel Ayarlar
+          </h3>
+
+          <ModernSlider
+            value={labelStyle.size}
+            onChange={(value) => setLabelStyle({ ...labelStyle, size: value })}
             min={0.4}
             max={1.4}
             step={0.1}
-            value={labelStyle.size}
-            onChange={(e) => setLabelStyle({ ...labelStyle, size: parseFloat(e.target.value) })}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            label="🔤 Yazı Boyutu"
           />
-          <div className="flex justify-between text-xs text-gray-600 mt-1">
-            <span>Küçük (0.4)</span>
-            <span className="font-semibold">
-              Yazı: {labelStyle.size.toFixed(1)} | İkon: {(labelStyle.size * 0.8).toFixed(1)}
-            </span>
-            <span>Büyük (1.4)</span>
-          </div>
-        </div>
 
-        <div>
-          <Label>İsim-İkon Mesafesi</Label>
-          <input
-            type="range"
+          <ModernSlider
+            value={labelStyle.nameIconDistance}
+            onChange={(value) => setLabelStyle({ ...labelStyle, nameIconDistance: value })}
             min={0}
             max={2}
             step={0.1}
-            value={labelStyle.nameIconDistance}
-            onChange={(e) => setLabelStyle({ ...labelStyle, nameIconDistance: parseFloat(e.target.value) })}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            label="📏 İsim-İkon Mesafesi"
           />
-          <div className="flex justify-between text-xs text-gray-600 mt-1">
-            <span>Yakın (0)</span>
-            <span className="font-semibold">{labelStyle.nameIconDistance.toFixed(1)}</span>
-            <span>Uzak (2)</span>
-          </div>
-        </div>
 
-        <div>
-          <Label>Takım 1 Renk</Label>
-          <Input type="color" value={labelStyle.colorTeam1} onChange={(e) => setLabelStyle({ ...labelStyle, colorTeam1: e.target.value })} />
-        </div>
-        <div>
-          <Label>Takım 2 Renk</Label>
-          <Input type="color" value={labelStyle.colorTeam2} onChange={(e) => setLabelStyle({ ...labelStyle, colorTeam2: e.target.value })} />
-        </div>
-        <div>
-          <Label>Tüm Oyuncular Yükseklik (Y)</Label>
-          <input
-            type="range"
+          <ModernSlider
+            value={Math.max(0.5, labelStyle.globalY)}
+            onChange={(value) => setLabelStyle({ ...labelStyle, globalY: Math.max(0.5, value) })}
             min={0.5}
             max={5}
             step={0.1}
-            value={Math.max(0.5, labelStyle.globalY)}
-            onChange={(e) => setLabelStyle({ ...labelStyle, globalY: Math.max(0.5, parseFloat(e.target.value)) })}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            label="📐 Oyuncu Yüksekliği"
+            unit=" m"
           />
-          <div className="flex justify-between text-xs text-gray-600 mt-1">
-            <span>Minimum (0.5)</span>
-            <span className="font-semibold bg-blue-100 px-2 py-1 rounded">{Math.max(0.5, labelStyle.globalY).toFixed(1)} <span className="text-green-600">(Sabit min: 0.5)</span></span>
-            <span>Yüksek (5)</span>
+
+          {/* Renk Seçiciler - Modern 3D */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <span className="text-2xl">🔵</span>
+                Takım 1 Rengi
+              </Label>
+              <div className="relative group">
+                <input
+                  type="color"
+                  value={labelStyle.colorTeam1}
+                  onChange={(e) => setLabelStyle({ ...labelStyle, colorTeam1: e.target.value })}
+                  className="w-full h-14 rounded-2xl border-[3px] border-white/30 bg-transparent cursor-pointer
+                           transform hover:scale-110 transition-all duration-300 shadow-xl"
+                />
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 to-purple-500/30 
+                               rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <span className="text-2xl">🔴</span>
+                Takım 2 Rengi
+              </Label>
+              <div className="relative group">
+                <input
+                  type="color"
+                  value={labelStyle.colorTeam2}
+                  onChange={(e) => setLabelStyle({ ...labelStyle, colorTeam2: e.target.value })}
+                  className="w-full h-14 rounded-2xl border-[3px] border-white/30 bg-transparent cursor-pointer
+                           transform hover:scale-110 transition-all duration-300 shadow-xl"
+                />
+                <div className="absolute -inset-1 bg-gradient-to-r from-red-500/30 to-pink-500/30 
+                               rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Oyuncular - Modern 3D Cards */}
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-white font-bold flex items-center justify-center gap-3 text-xl">
+              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
+                👥
+              </div>
+              Oyuncular ({players.length})
+            </h3>
+          </div>
+
+          <div className="space-y-6">
+            {/* Takım 1 - Modern 3D Header */}
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-blue-500/30 to-cyan-500/30 backdrop-blur-2xl 
+                             rounded-2xl p-4 border-2 border-blue-400/40 shadow-2xl transform hover:scale-[1.02] 
+                             transition-all duration-500">
+                <h4 className="text-blue-200 font-bold text-center text-lg flex items-center justify-center gap-3">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm">🔵</span>
+                  </div>
+                  Takım 1 ({players.filter(p => p.team === 1).length} oyuncu)
+                </h4>
+              </div>
+
+              <div className="space-y-3">
+                {players.filter(p => p.team === 1).map((p) => (
+                  <ModernPlayerCard
+                    key={p.id}
+                    player={p}
+                    onUpdate={(field, value) => updatePlayer(p.id, field, value)}
+                    onRemove={() => removePlayer(p.id)}
+                    isSelected={selectedId === p.id}
+                    onSelect={() => setSelectedId(p.id)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Takım 2 - Modern 3D Header */}
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-red-500/30 to-pink-500/30 backdrop-blur-2xl 
+                             rounded-2xl p-4 border-2 border-red-400/40 shadow-2xl transform hover:scale-[1.02] 
+                             transition-all duration-500">
+                <h4 className="text-red-200 font-bold text-center text-lg flex items-center justify-center gap-3">
+                  <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm">🔴</span>
+                  </div>
+                  Takım 2 ({players.filter(p => p.team === 2).length} oyuncu)
+                </h4>
+              </div>
+
+              <div className="space-y-3">
+                {players.filter(p => p.team === 2).map((p) => (
+                  <ModernPlayerCard
+                    key={p.id}
+                    player={p}
+                    onUpdate={(field, value) => updatePlayer(p.id, field, value)}
+                    onRemove={() => removePlayer(p.id)}
+                    isSelected={selectedId === p.id}
+                    onSelect={() => setSelectedId(p.id)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -885,12 +1364,14 @@ function SidePanel({ players, setPlayers, selectedId, setSelectedId, orbitEnable
 }
 
 // -----------------------------
-// Uygulama
+// Ana Uygulama
 // -----------------------------
 export default function App() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [orbitEnabled, setOrbitEnabled] = useState<boolean>(true);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [cameraInfo, setCameraInfo] = useState({
     position: { x: '0.01', y: '23.40', z: '20.34' },
     distance: '31.00',
@@ -903,9 +1384,27 @@ export default function App() {
     size: 0.7,
     outlineWidth: 0.05,
     outlineColor: "#ffffff",
-    globalY: Math.max(0.5, 0.6), // Minimum 0.5 yükseklik
+    globalY: Math.max(0.5, 0.6),
     nameIconDistance: 0.25,
   });
+
+  const handleAdminLogin = (password: string) => {
+    if (!ADMIN_PASSWORD) {
+      alert("Admin parolası yapılandırılmadı. Lütfen .env dosyasında VITE_ADMIN_PASSWORD tanımlayın.");
+      return;
+    }
+    if (password === ADMIN_PASSWORD) {
+      setIsAdmin(true);
+      setShowLoginModal(false);
+    } else {
+      alert("Hatalı şifre!");
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdmin(false);
+    setSelectedId(null);
+  };
 
   const setCameraPosition = (axis: string, value: number) => {
     const currentPos = {
@@ -972,8 +1471,29 @@ export default function App() {
   };
 
   return (
-    <div className="w-full h-screen flex bg-gray-200">
-      <div className="flex-1">
+    <div className="w-full h-screen flex bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 relative overflow-hidden">
+
+      {/* Animated Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20 animate-gradient-shift"></div>
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white/10 rounded-full animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${5 + Math.random() * 10}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Admin Hover Popup kaldırıldı */}
+
+      {/* 3D Sahne */}
+      <div className={`flex-1 relative ${isAdmin ? 'mr-[420px]' : ''}`}>
         <SceneWrapper
           players={players}
           setPlayers={setPlayers}
@@ -982,25 +1502,151 @@ export default function App() {
           cameraInfo={cameraInfo}
           setCameraInfo={setCameraInfo}
           manualCameraUpdate={manualCameraUpdate}
+          isAdmin={isAdmin}
         />
       </div>
-      <SidePanel
-        players={players}
-        setPlayers={setPlayers}
-        selectedId={selectedId}
-        setSelectedId={setSelectedId}
-        orbitEnabled={orbitEnabled}
-        setOrbitEnabled={setOrbitEnabled}
-        labelStyle={labelStyle}
-        setLabelStyle={setLabelStyle}
-        cameraInfo={cameraInfo}
-        setCameraPosition={setCameraPosition}
-        setCameraDistance={setCameraDistance}
-        setCameraAngle={setCameraAngle}
-        resetCamera={resetCamera}
-        topView={topView}
-        sideView={sideView}
+
+      {/* Admin Giriş Butonu */}
+      {!isAdmin && (
+        <div className="fixed bottom-8 left-8 z-[9998]">
+          <ModernButton
+            onClick={() => setShowLoginModal(true)}
+            variant="glass"
+            size="lg"
+            className="shadow-2xl border border-white/30"
+          >
+            <span className="flex items-center gap-2">🔐 Admin Girişi</span>
+          </ModernButton>
+        </div>
+      )}
+
+      {/* Admin Paneli (sağ sabit panel) */}
+      {isAdmin && (
+        <div id="admin-panel" className="fixed inset-y-0 right-0 w-[420px] z-[10000] pointer-events-auto">
+          {/* Admin Durum Çubuğu */}
+          <div id="admin-status-bar" className="absolute top-0 left-0 right-0 p-4 z-[10001] pointer-events-auto">
+            <AdminStatusBar isAdmin={isAdmin} onLogout={handleAdminLogout} />
+          </div>
+
+          {/* Sağ Panel */}
+          <div className="pt-20 h-full">
+            <ModernSidePanel
+              players={players}
+              setPlayers={setPlayers}
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+              orbitEnabled={orbitEnabled}
+              setOrbitEnabled={setOrbitEnabled}
+              labelStyle={labelStyle}
+              setLabelStyle={setLabelStyle}
+              cameraInfo={cameraInfo}
+              setCameraPosition={setCameraPosition}
+              setCameraDistance={setCameraDistance}
+              setCameraAngle={setCameraAngle}
+              resetCamera={resetCamera}
+              topView={topView}
+              sideView={sideView}
+              isAdmin={isAdmin}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Ultra Modern 3D Admin Giriş Modal */}
+      <AdminLoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleAdminLogin}
       />
+
+      {/* Custom CSS Animations */}
+      <style>{`
+        /* Fallback styles in case Tailwind isn't applied */
+        #admin-panel {
+          background: linear-gradient(135deg, rgba(17,24,39,0.95), rgba(30,58,138,0.92));
+          backdrop-filter: blur(12px);
+          border-left: 1px solid rgba(255,255,255,0.25);
+        }
+
+        #admin-status-bar > div { /* wrap of AdminStatusBar root */
+          pointer-events: auto;
+        }
+        @keyframes gradient-shift {
+          0%, 100% { background: linear-gradient(45deg, #1e3a8a, #7c3aed, #ec4899); }
+          25% { background: linear-gradient(45deg, #7c3aed, #ec4899, #1e3a8a); }
+          50% { background: linear-gradient(45deg, #ec4899, #1e3a8a, #7c3aed); }
+          75% { background: linear-gradient(45deg, #1e3a8a, #7c3aed, #ec4899); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          33% { transform: translateY(-20px) rotate(120deg); }
+          66% { transform: translateY(-10px) rotate(240deg); }
+        }
+        
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        
+        .animate-gradient-shift {
+          animation: gradient-shift 8s ease-in-out infinite;
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out;
+        }
+        
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Custom slider styling */
+        input[type="range"]::-webkit-slider-thumb {
+          appearance: none;
+          height: 24px;
+          width: 24px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+          transition: all 0.3s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+          transform: scale(1.2);
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+          height: 24px;
+          width: 24px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+          cursor: pointer;
+          border: none;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Perspective effects */
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        
+        .rotateX-5 {
+          transform: rotateX(5deg);
+        }
+      `}</style>
     </div>
   );
 }
